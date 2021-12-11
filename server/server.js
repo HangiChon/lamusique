@@ -2,6 +2,9 @@
 const express = require("express");
 const morgan = require("morgan");
 
+// import handlers
+const { handleLogin } = require("./handlers");
+
 // set constants
 const app = express();
 const PORT = 8000;
@@ -14,6 +17,9 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // endpoints
+// google login integration
+app.post("/api/auth", handleLogin);
+
 app.get("/hi", (req, res) => {
   res.status(200).json({ status: 200, hi: "hi" });
 });
