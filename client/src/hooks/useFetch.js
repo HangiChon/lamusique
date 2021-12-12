@@ -12,10 +12,8 @@ const useFetch = (endPoint, options = {}) => {
       try {
         const response = await fetch(endPoint, options);
         const formattedData = await response.json();
-        const { data, message } = formattedData;
-        setData(data);
-        setMsg(message);
-        data && setIsLoaded(true);
+        setData(formattedData);
+        // formattedData && setIsLoaded(true);
       } catch (err) {
         setError(err);
       }

@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 
+// spotify api provider
+import { SpotifyApiProvider } from "./context/SpotifyApiContext";
+
 // auth
 import { Auth0Provider } from "@auth0/auth0-react";
 
@@ -13,7 +16,9 @@ ReactDOM.render(
     audience={`https://${process.env.REACT_APP_DOMAIN}/api/v2/`}
     scope='read:current_user update:current_user_metadata'
   >
-    <App />
+    <SpotifyApiProvider>
+      <App />
+    </SpotifyApiProvider>
   </Auth0Provider>,
   document.getElementById("root")
 );

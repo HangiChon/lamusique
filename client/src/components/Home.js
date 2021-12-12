@@ -1,9 +1,6 @@
 import React from "react";
 import Background from "./Background";
 
-// visual
-import styled from "styled-components";
-
 const Home = () => {
   return (
     <>
@@ -14,7 +11,5 @@ const Home = () => {
     </>
   );
 };
-
-const Wrapper = styled.div``;
 
 export default Home;

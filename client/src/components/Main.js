@@ -4,10 +4,10 @@ import Search from "./Search";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
-import Background from "./Background";
 
 // visual
 import styled from "styled-components";
+import Background from "./Background";
 
 const Main = () => {
   const { user, getAccessTokenSilently } = useAuth0();

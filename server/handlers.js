@@ -1,9 +1,17 @@
 require("dotenv").config();
 const { v4: uuidv4 } = require("uuid");
+const https = require("https");
+
+// environment variables
+const {
+  MONGO_URI,
+  SPOTIFY_CLIENT_ID,
+  SPOTIFY_CLIENT_SECRET,
+  SPOTIFY_REDIRECT_URI
+} = process.env;
 
 // mongo
 const { MongoClient } = require("mongodb");
-const { MONGO_URI } = process.env;
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -73,6 +81,7 @@ const handleLogin = async (req, res) => {
   } catch (error) {
     response(res, 500, "Server Error");
   }
+  deactivateConn(client);
 };
 
 module.exports = { handleLogin };
