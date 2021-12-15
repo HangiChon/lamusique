@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router";
 import Search from "./Search";
+import Categories from "./Categories";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
@@ -63,13 +64,41 @@ const Main = () => {
         source='https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80'
         opacity='0.3'
       />
-      <Search />
+      <CategoriesWrapper>
+        <Categories />
+      </CategoriesWrapper>
+      <ResultWrapper>
+        <Search />
+      </ResultWrapper>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
   position: relative;
+`;
+
+const CategoriesWrapper = styled.div`
+  border: 1px solid white;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  height: 700px;
+  position: absolute;
+  top: calc(50% - 300px);
+  left: calc(50% - 900px);
+`;
+
+const ResultWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 700px;
+  width: 1000px;
+  position: absolute;
+  left: calc(50% - 500px);
+  top: calc(50% - 280px);
 `;
 
 export default withRouter(Main);

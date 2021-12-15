@@ -2,12 +2,16 @@ require("dotenv").config();
 const { v4: uuidv4 } = require("uuid");
 const https = require("https");
 
+// spotify auth
+const SpotifyWebApi = require("spotify-web-api-node");
+
 // environment variables
 const {
   MONGO_URI,
   SPOTIFY_CLIENT_ID,
   SPOTIFY_CLIENT_SECRET,
-  SPOTIFY_REDIRECT_URI
+  SPOTIFY_REDIRECT_URI,
+  SPOTIFY_BASE64
 } = process.env;
 
 // mongo
@@ -84,4 +88,28 @@ const handleLogin = async (req, res) => {
   deactivateConn(client);
 };
 
-module.exports = { handleLogin };
+//****************************
+//*    api/spotifyready/     *
+//****************************
+const handleSpotifyToken = async (req, res) => {
+  const { code } = req.body;
+  console.log(code);
+  const spotifyApi = new SpotifyWebApi({
+    redirectUri: SPOTIFY_REDIRECT_URI,
+    clientId: SPOTIFY_CLIENT_ID,
+    clientSecret: SPOTIFY_CLIENT_SECRET
+  });
+
+  const data = await spotifyApi.authorizationCodeGrant(req.body.code);
+  console.log(data.body.access_token);
+
+  // .then(data => {
+  //   response(res, 200, "Spotify Auth Information", {
+  //     access_token: data.body.access_token,
+  //     refresh_token: data.body.refresh_token,
+  //     expires_in: data.body.expires_in
+  //   });
+  // });
+};
+
+module.exports = { handleLogin, handleSpotifyToken };

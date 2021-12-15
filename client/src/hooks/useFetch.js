@@ -13,7 +13,7 @@ const useFetch = (endPoint, options = {}) => {
         const response = await fetch(endPoint, options);
         const formattedData = await response.json();
         setData(formattedData);
-        // formattedData && setIsLoaded(true);
+        formattedData && setIsLoaded(true);
       } catch (err) {
         setError(err);
       }

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import useFetch from "../hooks/useFetch";
-import TrackCard from "./TrackCard";
+import React, { useState, useContext } from "react";
+import AlbumCard from "./AlbumCard";
 
 // spotify
 import { SpotifyApiContext } from "../context/SpotifyApiContext";
@@ -8,18 +7,16 @@ import { SpotifyApiContext } from "../context/SpotifyApiContext";
 // visual
 import styled from "styled-components";
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaArrowAltCircleLeft } from "react-icons/fa";
-import { FaArrowAltCircleRight } from "react-icons/fa";
 
 const Search = () => {
   const { tokenInfo } = useContext(SpotifyApiContext);
-  const [artistName, setArtistName] = useState("");
-  const [tracks, setTracks] = useState(null);
+  const [queryValue, setQueryValue] = useState("");
+  const [searchResults, setSearchResults] = useState(null);
 
   const handleSubmit = e => {
     e.preventDefault();
 
-    const params = `?query=artist%3A${artistName}&type=track&market=US`;
+    const params = `?q=${queryValue}&type=track%2Cartist%2Calbum&market=US&limit=50`;
     const options = {
       headers: {
         "Content-Type": "application/json",
@@ -30,36 +27,30 @@ const Search = () => {
 
     fetch(`https://api.spotify.com/v1/search${params}`, options)
       .then(res => res.json())
-      .then(data => setTracks(data.tracks.items));
+      .then(data => setSearchResults(data.tracks.items))
+      .catch(error => console.log(error.message));
   };
-  console.log(tracks);
+
   return (
     <>
-      <Wrapper onSubmit={handleSubmit}>
+      <SearchBarWrapper onSubmit={handleSubmit}>
         <Input
-          placeholder='Search for an artist'
-          value={artistName}
-          onChange={e => setArtistName(e.target.value)}
+          placeholder='Search for a track, artist, album'
+          value={queryValue}
+          onChange={e => setQueryValue(e.target.value)}
         />
         <Button type='submit'>
           <AiOutlineSearch />
         </Button>
-      </Wrapper>
-      <LeftArrow />
-      <BoxWrapper>
-        <TrackCard tracks={tracks} />
-      </BoxWrapper>
-      <RightArrow />
+      </SearchBarWrapper>
+
+      {searchResults && <AlbumCard searchResults={searchResults} />}
     </>
   );
 };
 
-const Wrapper = styled.form`
-  display: flex;
-  margin: auto;
-  position: absolute;
-  top: calc(30% - 25px);
-  left: calc(50% - 150px);
+const SearchBarWrapper = styled.form`
+  position: relative;
 `;
 
 const Input = styled.input`
@@ -87,37 +78,6 @@ const Button = styled.button`
   position: absolute;
   top: 12px;
   right: 15px;
-`;
-
-const BoxWrapper = styled.div`
-  border-top: 1px solid white;
-  border-bottom: 1px solid white;
-  width: 1000px;
-  height: 250px;
-  position: absolute;
-  top: calc(50% + 70px);
-  left: calc(50% - 500px);
-  display: flex;
-  flex-wrap: nowrap;
-  padding: 10px;
-  overflow: hidden;
-`;
-
-const LeftArrow = styled(FaArrowAltCircleLeft)`
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  position: absolute;
-  top: calc(50% + 170px);
-  left: calc(50% - 570px);
-`;
-const RightArrow = styled(FaArrowAltCircleRight)`
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  position: absolute;
-  top: calc(50% + 170px);
-  left: calc(50% + 530px);
 `;
 
 export default Search;

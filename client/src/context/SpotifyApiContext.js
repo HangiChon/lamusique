@@ -22,7 +22,7 @@ export const SpotifyApiProvider = ({ children }) => {
     },
     json: true
   };
-  console.log(options);
+
   const [tokenInfo] = useFetch(
     "https://accounts.spotify.com/api/token",
     options
