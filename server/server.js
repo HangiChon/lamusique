@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 // import handlers
-const { handleLogin, handleSpotifyToken } = require("./handlers");
+const { handleLogin, updateCategory, getCategories } = require("./handlers");
 
 // set constants
 const app = express();
@@ -23,8 +23,11 @@ app.use(express.static("public"));
 // 0Auth implementation
 app.post("/api/auth", handleLogin);
 
-// spotify auth
-app.post("/api/spotifyready", handleSpotifyToken);
+// get categories
+app.get("/api/categories/:userNickname", getCategories);
+
+// update category
+app.put("/api/categories", updateCategory);
 
 // all the rest
 app.get("*", (req, res) => {

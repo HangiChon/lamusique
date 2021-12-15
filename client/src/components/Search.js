@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import AlbumCard from "./AlbumCard";
 
-// spotify
+// context
 import { SpotifyApiContext } from "../context/SpotifyApiContext";
 
 // visual

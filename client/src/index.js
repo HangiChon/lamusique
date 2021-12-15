@@ -2,8 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 
-// spotify api provider
+// context
 import { SpotifyApiProvider } from "./context/SpotifyApiContext";
+import { CurrentTrackProvider } from "./context/CurrentTrackContext";
 
 // auth
 import { Auth0Provider } from "@auth0/auth0-react";
@@ -17,7 +18,9 @@ ReactDOM.render(
     scope='read:current_user update:current_user_metadata'
   >
     <SpotifyApiProvider>
-      <App />
+      <CurrentTrackProvider>
+        <App />
+      </CurrentTrackProvider>
     </SpotifyApiProvider>
   </Auth0Provider>,
   document.getElementById("root")

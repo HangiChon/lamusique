@@ -2,8 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import useFetch from "../hooks/useFetch";
 import Player from "./Player";
 
-// spotify
+// context
 import { SpotifyApiContext } from "../context/SpotifyApiContext";
+import { CurrentTrackContext } from "../context/CurrentTrackContext";
 
 // visual
 import styled from "styled-components";
@@ -11,8 +12,8 @@ import { AiOutlinePlayCircle } from "react-icons/ai";
 
 const Tracks = ({ albumLink }) => {
   const { tokenInfo } = useContext(SpotifyApiContext);
+  const { currentTrack, setCurrentTrack } = useContext(CurrentTrackContext);
   const [songUri, setSongUri] = useState(null);
-  const [trackSelected, setTrackSelected] = useState(false);
 
   const albumTracksParams = `${albumLink}/tracks?market=US&limit=20`;
   const options = {
@@ -39,7 +40,7 @@ const Tracks = ({ albumLink }) => {
     setRefetchAlbumTracksRequired(yes => !yes);
     setRefetchAlbumInfoRequired(yes => !yes);
   }, [albumLink]);
-
+  console.log(albumInfo);
   return (
     albumTracks &&
     albumInfo && (
@@ -48,21 +49,31 @@ const Tracks = ({ albumLink }) => {
           <AlbumInfoContainer>
             <AlbumInfo>
               {albumInfo.name}
-              <ArtistName> by {albumInfo.artists[0].name}</ArtistName>
+              <ArtistName>
+                {" "}
+                by {albumInfo.artists[0].name} (
+                {albumInfo.release_date.substring(0, 4)})
+              </ArtistName>
             </AlbumInfo>
           </AlbumInfoContainer>
           <TracksContainer>
             {albumTracks &&
               albumTracks.items.map((item, idx) => {
                 return (
-                  <Flex key={`trackId-${idx + 1}`}>
+                  <Flex
+                    key={`trackId-${idx + 1}`}
+                    style={{
+                      color:
+                        item.id === (currentTrack && currentTrack.id) && "lime"
+                    }}
+                  >
                     <PlayIcon
                       onClick={() => {
-                        // setTrackSelected(true);
+                        setCurrentTrack(item);
                         setSongUri(item.uri);
                       }}
                     />
-                    <SongTitle style={{ color: trackSelected && "lime" }}>
+                    <SongTitle>
                       {idx + 1}. {item.name}
                     </SongTitle>
                   </Flex>

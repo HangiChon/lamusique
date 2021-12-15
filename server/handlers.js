@@ -42,7 +42,7 @@ const response = (res, code, msg, result) => {
 //*******ENDPOINT HANDLERS********//
 
 //****************************
-//*        api/auth/         *
+//*    POST - /api/auth/     *
 //****************************
 const handleLogin = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
@@ -82,6 +82,59 @@ const handleLogin = async (req, res) => {
       email: user.email,
       accessToken: token
     });
+    deactivateConn(client);
+  } catch (error) {
+    response(res, 500, "Server Error");
+  }
+};
+
+//****************************
+//*   /api/spotifyready/     *
+//****************************
+// const handleSpotifyToken = async (req, res) => {
+//   const { code } = req.body;
+//   console.log(code);
+//   const spotifyApi = new SpotifyWebApi({
+//     redirectUri: SPOTIFY_REDIRECT_URI,
+//     clientId: SPOTIFY_CLIENT_ID,
+//     clientSecret: SPOTIFY_CLIENT_SECRET
+//   });
+
+//   const data = await spotifyApi.authorizationCodeGrant(req.body.code);
+//   console.log(data.body.access_token);
+
+// .then(data => {
+//   response(res, 200, "Spotify Auth Information", {
+//     access_token: data.body.access_token,
+//     refresh_token: data.body.refresh_token,
+//     expires_in: data.body.expires_in
+//   });
+// });
+// };
+
+//****************************
+//*  GET - /api/categories   *
+//****************************
+const getCategories = async (req, res) => {
+  const { userNickname } = req.params;
+  console.log(userNickname);
+  const client = new MongoClient(MONGO_URI, options);
+
+  try {
+    const users = await activateConn(client, "lamusique", "users");
+
+    const { hasCategories } = await users.findOne(
+      { "userInfo.nickname": userNickname },
+      {
+        projection: {
+          "hasCategories": 1
+        }
+      }
+    );
+
+    hasCategories.length
+      ? response(res, 200, "Successfully retrieved categories", hasCategories)
+      : response(res, 400, "Category list is empty");
   } catch (error) {
     response(res, 500, "Server Error");
   }
@@ -89,27 +142,38 @@ const handleLogin = async (req, res) => {
 };
 
 //****************************
-//*    api/spotifyready/     *
+//*  PUT - /api/categories   *
 //****************************
-const handleSpotifyToken = async (req, res) => {
-  const { code } = req.body;
-  console.log(code);
-  const spotifyApi = new SpotifyWebApi({
-    redirectUri: SPOTIFY_REDIRECT_URI,
-    clientId: SPOTIFY_CLIENT_ID,
-    clientSecret: SPOTIFY_CLIENT_SECRET
-  });
+const updateCategory = async (req, res) => {
+  const { category, email } = req.body;
+  const client = new MongoClient(MONGO_URI, options);
 
-  const data = await spotifyApi.authorizationCodeGrant(req.body.code);
-  console.log(data.body.access_token);
+  try {
+    const users = await activateConn(client, "lamusique", "users");
 
-  // .then(data => {
-  //   response(res, 200, "Spotify Auth Information", {
-  //     access_token: data.body.access_token,
-  //     refresh_token: data.body.refresh_token,
-  //     expires_in: data.body.expires_in
-  //   });
-  // });
+    await users.findOne({ "userInfo.email": email }, async (error, result) => {
+      if (error) {
+        response(res, 400, "User Not Found", error.message);
+      } else {
+        const { modifiedCount, matchedCount } = await users.updateOne(
+          { "userInfo.email": email },
+          { $addToSet: { "hasCategories": category } }
+        );
+
+        modifiedCount &&
+          matchedCount &&
+          response(
+            res,
+            200,
+            `Successfully added category ${category}`,
+            req.body
+          );
+      }
+      deactivateConn(client);
+    });
+  } catch (error) {
+    response(res, 500, "Server Error");
+  }
 };
 
-module.exports = { handleLogin, handleSpotifyToken };
+module.exports = { handleLogin, updateCategory, getCategories };

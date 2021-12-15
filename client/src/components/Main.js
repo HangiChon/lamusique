@@ -46,7 +46,7 @@ const Main = () => {
         };
         const response = await fetch("/api/auth", options);
         const formattedData = await response.json();
-
+        console.log(formattedData);
         // save token in local storage only after backend touches it too
         if (formattedData.status === 200) {
           localStorage.setItem("UserData", JSON.stringify(formattedData.data));

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import useFetch from "../hooks/useFetch";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
@@ -8,43 +9,90 @@ import styled from "styled-components";
 
 const Categories = () => {
   const { user } = useAuth0();
+  const [categoryUpdate, setCategoryUpdate] = useState(false);
   const [formData, setFormData] = useState({
-    cateogry: ""
+    category: ""
   });
 
-  const handleCreateCategory = e => {
+  const handleCreateCategory = async e => {
     e.preventDefault();
-    console.log(e.target.input);
-    console.log(e.target.value);
+
+    const options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    };
+
+    // add and update category
+    const response = await fetch("/api/categories", options);
+    const formattedRes = await response.json();
+
+    if (formattedRes.status === 200) {
+      setCategoryUpdate(true);
+    }
+
+    setCategoryUpdate(false);
+    setFormData({
+      category: ""
+    });
   };
 
   const handleChange = e => {
     const { id, value } = e.target;
-    console.log(id, value);
+    setFormData({
+      [id]: value,
+      email: user.email
+    });
   };
 
-  console.log(user);
+  // get categories
+  const [CategoryList, isLoaded, , , , setRefetchCategoryList] = useFetch(
+    `/api/categories/${user.nickname}`
+  );
+
+  console.log(CategoryList, isLoaded);
+
+  useEffect(() => {
+    setRefetchCategoryList(yes => !yes);
+  }, [categoryUpdate]);
+
   return (
-    <>
+    <Wrapper>
       <Form onSubmit={e => handleCreateCategory(e)}>
-        <CategoryText
+        <InputCategory
           placeholder='Name your category'
           id='category'
-          value={categoryName}
+          value={formData.category}
           onChange={e => handleChange(e)}
         />
         <Button type='submit'>Create</Button>
       </Form>
-    </>
+      <CategoryWrapper>
+        {isLoaded &&
+          CategoryList.data.map((category, idx) => {
+            return (
+              <CategoryText key={`categoryId-${idx + 1}`}>
+                {category}
+              </CategoryText>
+            );
+          })}
+      </CategoryWrapper>
+    </Wrapper>
   );
 };
 
-const Form = styled.form`
-  text-align: center;
-  padding: 10px;
+const Wrapper = styled.div`
+  padding: 20px;
 `;
 
-const CategoryText = styled.input`
+const Form = styled.form`
+  text-align: center;
+  margin-bottom: 40px;
+`;
+
+const InputCategory = styled.input`
   border: 1px solid white;
   background: transparent;
   color: white;
@@ -60,11 +108,30 @@ const Button = styled.button`
   background: transparent;
   border: 1px solid white;
   color: white;
+  cursor: pointer;
   margin-left: 10px;
   height: 30px;
 
   &:active {
     opacity: 0.8;
   }
+
+  &:hover {
+    color: lime;
+  }
 `;
+
+const CategoryWrapper = styled.div`
+  text-align: center;
+`;
+
+const CategoryText = styled.p`
+  margin-bottom: 10px;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 export default Categories;
