@@ -4,9 +4,12 @@ export const CurrentTrackContext = createContext(null);
 
 export const CurrentTrackProvider = ({ children }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [songUri, setSongUri] = useState([]);
   console.log(currentTrack);
   return (
-    <CurrentTrackContext.Provider value={{ currentTrack, setCurrentTrack }}>
+    <CurrentTrackContext.Provider
+      value={{ currentTrack, setCurrentTrack, songUri, setSongUri }}
+    >
       {children}
     </CurrentTrackContext.Provider>
   );

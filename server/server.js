@@ -4,7 +4,13 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 // import handlers
-const { handleLogin, updateCategory, getCategories } = require("./handlers");
+const {
+  handleLogin,
+  updateUserCategory,
+  getUserCategories,
+  updateCategoryCol,
+  getTracksPerCategory
+} = require("./handlers");
 
 // set constants
 const app = express();
@@ -23,11 +29,15 @@ app.use(express.static("public"));
 // 0Auth implementation
 app.post("/api/auth", handleLogin);
 
-// get categories
-app.get("/api/categories/:userNickname", getCategories);
+// users
+// get categoriesOwned ("users" collection)
+app.get("/api/categories/:userNickname", getUserCategories);
+// update categoriesOwned ("users" collection)
+app.put("/api/categories", updateUserCategory);
 
-// update category
-app.put("/api/categories", updateCategory);
+// categories
+app.post("/api/categories", updateCategoryCol);
+app.get("/api/categories/:userId/:categoryName", getTracksPerCategory);
 
 // all the rest
 app.get("*", (req, res) => {

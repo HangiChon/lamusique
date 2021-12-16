@@ -6,6 +6,10 @@ import Header from "./components/Header";
 import Home from "./components/Home";
 import Main from "./components/Main";
 
+// context
+import { CategoryProvider } from "./context/CategoryContext";
+import { TracksProvider } from "./context/TracksContext";
+
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -21,7 +25,13 @@ const App = () => {
       <Header />
       <Switch>
         <Route exact path='/' component={Home} />
-        {isAuthenticated && <Route exact path='/main' component={Main} />}
+        {isAuthenticated && (
+          <CategoryProvider>
+            <TracksProvider>
+              <Route exact path='/main' component={Main} />
+            </TracksProvider>
+          </CategoryProvider>
+        )}
       </Switch>
     </Router>
   );

@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { withRouter } from "react-router";
 import Search from "./Search";
 import Categories from "./Categories";
+import Player from "./Player";
+import Event from "./Event";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
+
+// context
+import { CurrentUserContext } from "../context/CurrentUserContext";
+import { SpotifyApiContext } from "../context/SpotifyApiContext";
+import { CurrentTrackContext } from "../context/CurrentTrackContext";
 
 // visual
 import styled from "styled-components";
@@ -13,6 +20,9 @@ import Background from "./Background";
 const Main = () => {
   const { user, getAccessTokenSilently } = useAuth0();
   const [userMetadata, setUserMetadata] = useState(null);
+  const { setCurrentUser } = useContext(CurrentUserContext);
+  const { tokenInfo } = useContext(SpotifyApiContext);
+  const { songUri, setSongUri } = useContext(CurrentTrackContext);
 
   useEffect(() => {
     const getUserMetadata = async () => {
@@ -35,7 +45,6 @@ const Main = () => {
 
         const user_metadata = await metadataResponse.json();
         setUserMetadata(user_metadata);
-
         // send accessToken to server
         const options = {
           method: "POST",
@@ -44,11 +53,14 @@ const Main = () => {
           },
           body: JSON.stringify({ token: accessToken, user: user })
         };
+
         const response = await fetch("/api/auth", options);
         const formattedData = await response.json();
         console.log(formattedData);
+
         // save token in local storage only after backend touches it too
         if (formattedData.status === 200) {
+          setCurrentUser(formattedData.data);
           localStorage.setItem("UserData", JSON.stringify(formattedData.data));
         }
       } catch (error) {
@@ -70,6 +82,15 @@ const Main = () => {
       <ResultWrapper>
         <Search />
       </ResultWrapper>
+      <EventWrapper>
+        <Event />
+      </EventWrapper>
+      <PlayerWrapper>
+        <Player
+          token={tokenInfo.access_token}
+          uris={songUri ? [songUri] : []}
+        />
+      </PlayerWrapper>
     </Wrapper>
   );
 };
@@ -83,7 +104,7 @@ const CategoriesWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 300px;
-  height: 700px;
+  height: 650px;
   position: absolute;
   top: calc(50% - 300px);
   left: calc(50% - 900px);
@@ -93,12 +114,30 @@ const ResultWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 700px;
+  justify-content: space-around;
+  height: 600px;
   width: 1000px;
   position: absolute;
   left: calc(50% - 500px);
   top: calc(50% - 280px);
+`;
+
+const EventWrapper = styled.div`
+  border: 1px solid white;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  height: 650px;
+  position: absolute;
+  top: calc(50% - 300px);
+  right: calc(50% - 900px);
+`;
+
+const PlayerWrapper = styled.div`
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 `;
 
 export default withRouter(Main);
