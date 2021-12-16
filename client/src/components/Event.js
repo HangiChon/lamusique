@@ -8,46 +8,51 @@ import { CurrentTrackContext } from "../context/CurrentTrackContext";
 import styled from "styled-components";
 
 const Event = () => {
-  const [artistName, setArtistName] = useState(null);
+  const [artistName, setArtistName] = useState("");
   const [eventInfo, setEventInfo] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [message, setMessage] = useState("");
-  const { currentTrack } = useContext(CurrentTrackContext);
+  const { currentTrack, songUri } = useContext(CurrentTrackContext);
+  const uri = "https://app.ticketmaster.com/discovery/v2/events.json?";
+  // const uri = `https://app.ticketmaster.com/discovery/v2/events.json?countryCode=CA&apikey=${
+  //   process.env.REACT_APP_EVENT_KEY
+  // }&keyword=${artistName && encodeURI(artistName)}`;
 
+  const fetchInfo = async () => {
+    console.log(artistName);
+    const response = await fetch(
+      uri +
+        new URLSearchParams({
+          countryCode: "CA",
+          apikey: process.env.REACT_APP_EVENT_KEY,
+          keyword: artistName
+        })
+    );
+    const formattedRes = await response.json();
+
+    if (formattedRes._embedded) {
+      setEventInfo(formattedRes);
+      setIsLoaded(true);
+    } else {
+      setMessage(
+        `Could not find the artist ${
+          currentTrack && currentTrack.artists[0].name
+        }'s upcoming events in Canada`
+      );
+    }
+  };
   useEffect(() => {
     setArtistName(currentTrack && currentTrack.artists[0].name);
-    // setRefetchRequired(yes => !yes);
-
-    const fetchInfo = async () => {
-      const response = await fetch(
-        `https://app.ticketmaster.com/discovery/v2/events.json?countryCode=CA&apikey=${
-          process.env.REACT_APP_EVENT_KEY
-        }&keyword=${artistName && artistName}`
-      );
-      const formattedRes = await response.json();
-
-      if (formattedRes._embedded) {
-        setEventInfo(formattedRes);
-        setIsLoaded(true);
-      } else {
-        setMessage(
-          `Could not find the artist ${currentTrack.artists[0].name}'s upcoming events in Canada`
-        );
-      }
-    };
-
-    currentTrack !== null && fetchInfo();
-  }, [currentTrack !== null && currentTrack.name]);
-
-  console.log(currentTrack);
-  console.log(eventInfo);
+    console.log(uri);
+    fetchInfo();
+  }, [currentTrack && currentTrack.artists]);
 
   return isLoaded && eventInfo._embedded ? (
     <>
-      <SponsorWrapper>
+      {/* <SponsorWrapper>
         Sponsored by
         <SponsorLogo src='https://www.seekpng.com/png/detail/238-2381165_ticketmaster-logo-ticket-master-png.png'></SponsorLogo>
-      </SponsorWrapper>
+      </SponsorWrapper> */}
       <Wrapper>
         <Title>Upcoming Events</Title>
         {eventInfo._embedded.events.map(event => {
@@ -106,10 +111,10 @@ const Event = () => {
   ) : (
     <Wrapper>
       {message}
-      <SponsorWrapper>
+      {/* <SponsorWrapper>
         Sponsored by{" "}
         <SponsorLogo src='https://www.seekpng.com/png/detail/238-2381165_ticketmaster-logo-ticket-master-png.png'></SponsorLogo>
-      </SponsorWrapper>
+      </SponsorWrapper> */}
     </Wrapper>
   );
 };

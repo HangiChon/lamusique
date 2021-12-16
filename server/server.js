@@ -9,7 +9,8 @@ const {
   updateUserCategory,
   getUserCategories,
   updateCategoryCol,
-  getTracksPerCategory
+  getTracksPerCategory,
+  removeCategory
 } = require("./handlers");
 
 // set constants
@@ -37,6 +38,7 @@ app.put("/api/categories", updateUserCategory);
 
 // categories
 app.post("/api/categories", updateCategoryCol);
+app.put("/api/categories/:categoryName", removeCategory);
 app.get("/api/categories/:userId/:categoryName", getTracksPerCategory);
 
 // all the rest

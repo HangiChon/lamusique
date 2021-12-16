@@ -6,11 +6,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 // context
 import { CategoryContext } from "../context/CategoryContext";
+import { CurrentTrackContext } from "../context/CurrentTrackContext";
 
 // visual
 import styled from "styled-components";
 import { AiOutlinePlayCircle } from "react-icons/ai";
-import { CurrentTrackContext } from "../context/CurrentTrackContext";
+import { FiDelete } from "react-icons/fi";
 
 const Categories = () => {
   const { user } = useAuth0();
@@ -35,6 +36,7 @@ const Categories = () => {
     category: "",
     email: ""
   });
+  const [showDelete, setShowDelete] = useState(false);
 
   const handleCreateCategory = async e => {
     e.preventDefault();
@@ -70,7 +72,27 @@ const Categories = () => {
     });
   };
 
-  const handleEdit = e => {};
+  const handleDelete = async category => {
+    console.log(category);
+    const options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: userId
+      })
+    };
+
+    const response = await fetch(`/api/categories/${category}`, options);
+    const formattedRes = await response.json();
+
+    if (formattedRes.status === 200) {
+      setCategoryUpdate(true);
+    }
+
+    setCategoryUpdate(false);
+  };
 
   // get tracks per category
   const [tracksPerCat, tracksLoaded, , , , setRefetchTracksPerCat] = useFetch(
@@ -105,15 +127,27 @@ const Categories = () => {
           categoryList.data.map((category, idx) => {
             return (
               <>
-                <CategoryText
-                  key={`categoryId-${idx + 1}`}
-                  onClick={() => {
-                    setSelectedCategory(category);
-                    setShowMyTracks(yes => !yes);
-                  }}
-                >
-                  {category}
-                </CategoryText>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <CategoryText
+                    key={`categoryId-${idx + 1}`}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowMyTracks(yes => !yes);
+                    }}
+                  >
+                    {category}{" "}
+                  </CategoryText>
+                  <FiDelete
+                    onClick={() => handleDelete(category)}
+                    style={{
+                      marginLeft: "10px",
+                      transform: "translateY(3px)",
+                      display: showDelete ? "inline" : "none",
+                      color: "red",
+                      cursor: "pointer"
+                    }}
+                  />
+                </div>
                 <TitleWrapper>
                   {showMyTracks &&
                     tracksPerCat.data &&
@@ -144,7 +178,7 @@ const Categories = () => {
           })}
         <Button
           style={{ color: "#FF9301", textAlign: "center" }}
-          onClick={handleEdit}
+          onClick={() => setShowDelete(!showDelete)}
         >
           Edit
         </Button>
@@ -155,6 +189,7 @@ const Categories = () => {
 
 const Wrapper = styled.div`
   padding: 20px;
+  overflow-y: auto;
 `;
 
 const Title = styled.p`

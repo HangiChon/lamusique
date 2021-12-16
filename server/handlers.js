@@ -312,10 +312,61 @@ const getTracksPerCategory = async (req, res) => {
   } catch (error) {}
 };
 
+//****************************
+//*  PUT - /api/categories   *
+//****************************
+const removeCategory = async (req, res) => {
+  const { userId } = req.body;
+  const { categoryName } = req.params;
+  const client = new MongoClient(MONGO_URI, options);
+
+  try {
+    const category = await activateConn(client, "lamusique", "categories");
+
+    await category.updateOne(
+      { "ownerId": userId },
+      {
+        $unset: { [`songs.${categoryName}`]: "" },
+        $pull: {
+          "catNames": categoryName
+        }
+      },
+      async (err, result) => {
+        const { modifiedCount, matchedCount } = result;
+
+        await client
+          .db("lamusique")
+          .collection("users")
+          .updateOne(
+            {
+              "_id": userId
+            },
+            {
+              $pull: {
+                "hasCategories": categoryName
+              }
+            }
+          );
+
+        modifiedCount && matchedCount
+          ? response(
+              res,
+              200,
+              `Successfully deleted category "${categoryName}".`,
+              req.body
+            )
+          : response(res, 400, "Something went wrong");
+        deactivateConn(client);
+      }
+    );
+  } catch (error) {}
+};
+
 module.exports = {
   handleLogin,
   updateUserCategory,
   getUserCategories,
   updateCategoryCol,
-  getTracksPerCategory
+  getTracksPerCategory,
+  removeCategory
 };
