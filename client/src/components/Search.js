@@ -13,6 +13,7 @@ const Search = () => {
   const [queryValue, setQueryValue] = useState("");
   const [searchResults, setSearchResults] = useState(null);
 
+  // submit form from search
   const handleSubmit = e => {
     e.preventDefault();
 

@@ -73,7 +73,6 @@ const handleLogin = async (req, res) => {
         }
       },
       async (err, result) => {
-        console.log(result);
         // user exists
         if (result) {
           response(res, 200, "Successfully logged in", {
@@ -84,6 +83,7 @@ const handleLogin = async (req, res) => {
             nickname: user.nickname,
             accessToken: token
           });
+
           // new user
         } else {
           await users.insertOne(userData);
@@ -102,67 +102,20 @@ const handleLogin = async (req, res) => {
             accessToken: token
           });
         }
+
         deactivateConn(client);
       }
     );
-    // console.log("am I here?", userExists);
-    // if (!userExists) {
-    //   await users.insertOne(userData);
-    //   response(res, 200, "Successfully registered user", {
-    //     id: userExists._id,
-    //     name: user.name,
-    //     picture: user.picture,
-    //     email: user.email,
-    //     nickname: user.nickname,
-    //     accessToken: token
-    //   });
-    //   deactivateConn(client);
-    // } else {
-    //   response(res, 200, "Successfully logged in", {
-    //     id: userExists._id,
-    //     name: user.name,
-    //     picture: user.picture,
-    //     email: user.email,
-    //     nickname: user.nickname,
-    //     accessToken: token
-    //   });
-    //   deactivateConn(client);
-    // }
   } catch (error) {
     response(res, 500, "Server Error");
   }
 };
 
 //****************************
-//*   /api/spotifyready/     *
-//****************************
-// const handleSpotifyToken = async (req, res) => {
-//   const { code } = req.body;
-//   console.log(code);
-//   const spotifyApi = new SpotifyWebApi({
-//     redirectUri: SPOTIFY_REDIRECT_URI,
-//     clientId: SPOTIFY_CLIENT_ID,
-//     clientSecret: SPOTIFY_CLIENT_SECRET
-//   });
-
-//   const data = await spotifyApi.authorizationCodeGrant(req.body.code);
-//   console.log(data.body.access_token);
-
-// .then(data => {
-//   response(res, 200, "Spotify Auth Information", {
-//     access_token: data.body.access_token,
-//     refresh_token: data.body.refresh_token,
-//     expires_in: data.body.expires_in
-//   });
-// });
-// };
-
-//****************************
 //*  GET - /api/categories   *
 //****************************
 const getUserCategories = async (req, res) => {
   const { userNickname } = req.params;
-  console.log(userNickname);
   const client = new MongoClient(MONGO_URI, options);
 
   try {
@@ -188,6 +141,7 @@ const getUserCategories = async (req, res) => {
   } catch (error) {
     response(res, 500, "Server Error", []);
   }
+
   deactivateConn(client);
 };
 
@@ -209,7 +163,6 @@ const updateUserCategory = async (req, res) => {
         }
       },
       async (error, result) => {
-        console.log(result);
         if (error) {
           response(res, 400, "User Not Found", error.message);
         } else {
@@ -217,6 +170,7 @@ const updateUserCategory = async (req, res) => {
             { "userInfo.email": email },
             { $addToSet: { "hasCategories": category } }
           );
+
           await client
             .db("lamusique")
             .collection("categories")
@@ -235,6 +189,7 @@ const updateUserCategory = async (req, res) => {
                 req.body
               )
             : response(res, 400, "Something went wrong", req.body);
+
           deactivateConn(client);
         }
       }
@@ -249,7 +204,6 @@ const updateUserCategory = async (req, res) => {
 //****************************
 const updateCategoryCol = async (req, res) => {
   const { track, userId, category } = req.body;
-  console.log(track, userId, category);
   const client = new MongoClient(MONGO_URI, options);
 
   try {
@@ -270,6 +224,7 @@ const updateCategoryCol = async (req, res) => {
               req.body
             )
           : response(res, 400, "Something went wrong", req.body);
+
         deactivateConn(client);
       }
     );

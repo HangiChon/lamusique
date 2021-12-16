@@ -19,6 +19,10 @@ import GlobalStyles from "./components/GlobalStyles";
 const App = () => {
   const { isAuthenticated } = useAuth0();
 
+  // this web application has only single route at "/main" that embeds all the features
+  // that were planned, which was intentional, with a bit of additional routes including
+  // "/profile" that can be done in the future
+
   return (
     <Router>
       <GlobalStyles />
@@ -38,4 +42,3 @@ const App = () => {
 };
 
 export default App;
-// "start": "concurrently \"yarn start:client\" \"cd ../server && yarn start:server\"",

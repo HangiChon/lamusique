@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // spotify
+// SpotifyWebPlayer also works
 import SpotifyWebPlayer from "react-spotify-web-playback";
 import SpotifyPlayer from "react-spotify-web-playback";
 

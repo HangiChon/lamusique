@@ -25,8 +25,7 @@ app.use(cors());
 // any requests for static files will go into the public folder
 app.use(express.static("public"));
 
-// endpoints
-
+// ENDPOINTS //
 // 0Auth implementation
 app.post("/api/auth", handleLogin);
 

@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import useFetch from "../hooks/useFetch";
-import Player from "./Player";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
@@ -15,13 +14,13 @@ import styled from "styled-components";
 import { AiOutlinePlayCircle } from "react-icons/ai";
 
 const Tracks = ({ albumLink }) => {
-  const { user } = useAuth0();
   const { categoryList, isLoaded } = useContext(CategoryContext);
   const { tokenInfo } = useContext(SpotifyApiContext);
   const { currentTrack, setCurrentTrack, songUri, setSongUri } =
     useContext(CurrentTrackContext);
   const [noValue, setNoValue] = useState("");
 
+  // information needed to get tracks of an album
   const albumTracksParams = `${albumLink}/tracks?market=US&limit=20`;
   const options_spotify = {
     headers: {
@@ -49,7 +48,7 @@ const Tracks = ({ albumLink }) => {
   }, [albumLink]);
 
   const handleChange = async e => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     if (e.target.value !== "none") {
       const options_mongo = {
         method: "POST",
@@ -71,7 +70,6 @@ const Tracks = ({ albumLink }) => {
       // add song to a category (mongo)
       const result = await fetch("/api/categories", options_mongo);
       const formattedRes = await result.json();
-      console.log(formattedRes);
     }
     setNoValue("");
   };

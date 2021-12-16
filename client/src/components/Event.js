@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import useFetch from "../hooks/useFetch";
 
 // context
 import { CurrentTrackContext } from "../context/CurrentTrackContext";
@@ -12,14 +11,10 @@ const Event = () => {
   const [eventInfo, setEventInfo] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [message, setMessage] = useState("");
-  const { currentTrack, songUri } = useContext(CurrentTrackContext);
+  const { currentTrack } = useContext(CurrentTrackContext);
   const uri = "https://app.ticketmaster.com/discovery/v2/events.json?";
-  // const uri = `https://app.ticketmaster.com/discovery/v2/events.json?countryCode=CA&apikey=${
-  //   process.env.REACT_APP_EVENT_KEY
-  // }&keyword=${artistName && encodeURI(artistName)}`;
 
   const fetchInfo = async () => {
-    console.log(artistName);
     const response = await fetch(
       uri +
         new URLSearchParams({
@@ -41,12 +36,13 @@ const Event = () => {
       );
     }
   };
+
   useEffect(() => {
     setArtistName(currentTrack && currentTrack.artists[0].name);
-    console.log(uri);
     fetchInfo();
   }, [currentTrack && currentTrack.artists]);
 
+  // make sure to put the logo when the app is used for commercial use
   return isLoaded && eventInfo._embedded ? (
     <>
       {/* <SponsorWrapper>

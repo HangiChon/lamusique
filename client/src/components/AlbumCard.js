@@ -1,10 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Tracks from "./Tracks";
-
-// context
-import { CategoryContext } from "../context/CategoryContext";
 
 // visual
 import styled from "styled-components";

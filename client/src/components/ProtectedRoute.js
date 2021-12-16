@@ -6,7 +6,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const ProtectedRoute = ({ component: Component, ...rest }) => {
   const { isAuthenticated } = useAuth0();
-  console.log(isAuthenticated);
+
   return (
     <Route
       {...rest}

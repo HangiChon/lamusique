@@ -9,7 +9,6 @@ import Event from "./Event";
 import { useAuth0 } from "@auth0/auth0-react";
 
 // context
-import { CurrentUserContext } from "../context/CurrentUserContext";
 import { SpotifyApiContext } from "../context/SpotifyApiContext";
 import { CurrentTrackContext } from "../context/CurrentTrackContext";
 
@@ -19,10 +18,9 @@ import Background from "./Background";
 
 const Main = () => {
   const { user, getAccessTokenSilently } = useAuth0();
-  const [userMetadata, setUserMetadata] = useState(null);
-  const { setCurrentUser } = useContext(CurrentUserContext);
+  const [, setUserMetadata] = useState(null);
   const { tokenInfo } = useContext(SpotifyApiContext);
-  const { songUri, setSongUri } = useContext(CurrentTrackContext);
+  const { songUri } = useContext(CurrentTrackContext);
 
   useEffect(() => {
     const getUserMetadata = async () => {
@@ -56,11 +54,9 @@ const Main = () => {
 
         const response = await fetch("/api/auth", options);
         const formattedData = await response.json();
-        console.log(formattedData);
 
         // save token in local storage only after backend touches it too
         if (formattedData.status === 200) {
-          setCurrentUser(formattedData.data);
           localStorage.setItem("UserData", JSON.stringify(formattedData.data));
         }
       } catch (error) {
@@ -134,7 +130,7 @@ const EventWrapper = styled.div`
 `;
 
 const PlayerWrapper = styled.div`
-  width: 100%;
+  width: 100vw;
   position: absolute;
   bottom: 0;
   left: 0;

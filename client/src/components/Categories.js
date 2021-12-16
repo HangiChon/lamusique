@@ -24,9 +24,6 @@ const Categories = () => {
     setRefetchCategoryList,
     setSelectedCategory,
     selectedCategory
-    // tracksPerCat,
-    // tracksLoaded,
-    // setRefetchTracksPerCat
   } = useContext(CategoryContext);
   const { currentTrack, setCurrentTrack, setSongUri } =
     useContext(CurrentTrackContext);
@@ -64,6 +61,7 @@ const Categories = () => {
     });
   };
 
+  // input value detect when creating a new category
   const handleChange = e => {
     const { id, value } = e.target;
     setFormData({
@@ -72,8 +70,11 @@ const Categories = () => {
     });
   };
 
+  // function that gets triggererd when x pops up next to category names
+  // after clicking 'edit' button to delete the category
+  // TODO: more fine tuned feature can be implemented to delete a particular song
+  // instead of the category itself
   const handleDelete = async category => {
-    console.log(category);
     const options = {
       method: "PUT",
       headers: {
@@ -95,21 +96,18 @@ const Categories = () => {
   };
 
   // get tracks per category
-  const [tracksPerCat, tracksLoaded, , , , setRefetchTracksPerCat] = useFetch(
+  const [tracksPerCat, , , , , setRefetchTracksPerCat] = useFetch(
     `/api/categories/${userId}/${selectedCategory}`
   );
 
   useEffect(() => {
     setRefetchCategoryList(yes => !yes);
   }, [categoryUpdate]);
-  console.log(categoryList);
 
   useEffect(() => {
     setRefetchTracksPerCat(yes => !yes);
   }, [selectedCategory]);
-  console.log(tracksPerCat);
 
-  console.log(selectedCategory);
   return (
     <Wrapper>
       <Title>Shelf</Title>

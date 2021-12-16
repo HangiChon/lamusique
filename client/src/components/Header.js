@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Logo from "./Logo";
 import { useHistory } from "react-router-dom";
 
@@ -23,9 +23,9 @@ const Header = () => {
       {isAuthenticated ? (
         <>
           <Items>
-            <Greeting>
+            <h2>
               Hello, <Italic>{user.nickname}</Italic> !
-            </Greeting>
+            </h2>
           </Items>
           <Items>
             <Button onClick={() => history.push("/main")}>Search</Button>
@@ -55,8 +55,6 @@ const Wrapper = styled.div`
 const Items = styled.div`
   display: flex;
 `;
-
-const Greeting = styled.h2``;
 
 const Italic = styled.span`
   font-style: italic;
