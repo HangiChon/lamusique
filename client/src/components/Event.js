@@ -20,7 +20,7 @@ const Event = () => {
         new URLSearchParams({
           countryCode: "CA",
           apikey: process.env.REACT_APP_EVENT_KEY,
-          keyword: artistName
+          keyword: currentTrack && currentTrack.artists[0].name
         })
     );
     const formattedRes = await response.json();
@@ -28,7 +28,10 @@ const Event = () => {
     if (formattedRes._embedded) {
       setEventInfo(formattedRes);
       setIsLoaded(true);
+    } else if (!currentTrack) {
+      setMessage("");
     } else {
+      setIsLoaded(false);
       setMessage(
         `Could not find the artist ${
           currentTrack && currentTrack.artists[0].name
@@ -43,7 +46,7 @@ const Event = () => {
   }, [currentTrack && currentTrack.artists]);
 
   // make sure to put the logo when the app is used for commercial use
-  return isLoaded && eventInfo._embedded ? (
+  return isLoaded ? (
     <>
       {/* <SponsorWrapper>
         Sponsored by
@@ -106,6 +109,7 @@ const Event = () => {
     </>
   ) : (
     <Wrapper>
+      <Title>Upcoming Events</Title>
       {message}
       {/* <SponsorWrapper>
         Sponsored by{" "}
